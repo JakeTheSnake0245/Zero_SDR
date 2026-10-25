@@ -93,9 +93,10 @@ Use 3.3 V CH341A only (many cheap CH341A boards put 5 V on the data lines; modif
 ## Section 1 — Flashed slim appliance (2026-10-25)
 
 **Flash now holds the custom Option A "slim" appliance firmware** (was stock Pluto before).
-- Firmware partition (SPI `0x200000`, DFU alt `firmware.dfu`) ← `tezuka/patched/tezuka_slim.itb`
-  md5 `141a2cc951c5765a92ff6c438237ee5b`, 13,970,050 bytes (ends `0xF52A82`, below the 16 MB EAR line).
-- Contents: DMABUF kernel `#3` + Tezuka FPGA + read-only-partition DTB w/ `dr_mode="peripheral"` (USB gadget forced, cable-order fix) + slim rootfs (`iiod` + `zcd -u` autostart, unlocked TX).
+- Firmware partition (SPI `0x200000`, DFU alt `firmware.dfu`) ← `firmware/zero_sdr_slim.itb`
+  md5 `ac239452a90035d6522a53f0e6e88307`, 13,976,122 bytes (below the 16 MB EAR line).
+  (Earlier v0.1.0 build `141a2cc9…` is the same image without the stable-serial fix.)
+- Contents: DMABUF kernel `#3` + Tezuka FPGA + read-only-partition DTB w/ `dr_mode="peripheral"` (USB gadget forced, cable-order fix) + slim rootfs (`iiod` + `zcd -u` autostart, unlocked TX, stable ethaddr-derived serial).
 - Env: `fit_size=0xD52A82`; DDR `preboot` fix intact; FSBL+U-Boot (`0x0–0x100000`) untouched.
 
 ### Rollback to stock firmware (DFU, reachable on cold boot regardless of cable order)
