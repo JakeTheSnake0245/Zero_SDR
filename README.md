@@ -81,6 +81,10 @@ $ SoapySDRUtil --find="driver=nanozc"
 
 Select it like any Soapy device and set the sample rate up to 20 MS/s.
 
+**SCEPTRE** needs extra care — it bundles its own SoapySDR and loads plugins from its *own*
+modules dir, and the device must be selected as **"PlutoSDR Nano zero-copy"** (not the built-in
+"Pluto SDR"). Full steps: **[`docs/SCEPTRE.md`](docs/SCEPTRE.md)**.
+
 ### With SDR++
 SDR++'s built-in **PlutoSDR** source uses libiio — that is the slow path and will be choppy at high
 rates. The zero-copy path goes through SDR++'s **SoapySDR** source module, which the official

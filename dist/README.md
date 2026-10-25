@@ -30,7 +30,9 @@ cp libSoapyNanoZC.so "$(SoapySDRUtil --info | awk -F': ' '/Search path/{print $2
 SoapySDRUtil --find="driver=nanozc"   # should list "PlutoSDR Nano zero-copy"
 ```
 
-- **SCEPTRE**: that's all — it uses SoapySDR natively, so `nanozc` now appears.
+- **SCEPTRE**: bundles its own SoapySDR and loads plugins from its *own* modules dir (not the
+  system one), and you must pick "PlutoSDR Nano zero-copy", not "Pluto SDR". See
+  [`../docs/SCEPTRE.md`](../docs/SCEPTRE.md).
 - **SDR++**: also needs the plugin below (stock SDR++ ships no SoapySDR source).
 
 ## `soapy_source.dylib` — the SDR++ SoapySDR source plugin
