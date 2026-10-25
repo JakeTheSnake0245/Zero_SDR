@@ -74,6 +74,11 @@ public:
         evRun_ = true;
         ev_ = std::thread([this] { while (evRun_) { timeval tv{0, 50000}; libusb_handle_events_timeout_completed(ctx_, &tv, nullptr); } });
         loMin_ = get(ZC_P_LO_MIN_HZ); loMax_ = get(ZC_P_LO_MAX_HZ);
+        // The AD9361 driver rejects the exact bottom-edge LO (e.g. 46875000/46875001 Hz) even though
+        // values a few Hz higher tune fine. A host that opens the device at the advertised range
+        // minimum (e.g. SCEPTRE sets LO = range.min) then gets EINVAL and fails to connect. Nudge the
+        // advertised/clamped minimum a few kHz above that dead zone; negligible loss (keeps 50 MHz 6 m).
+        loMin_ += 4096;
         SoapySDR::logf(SOAPY_SDR_INFO, "NanoZC: interface %d, serial %s, LO %.3f-%.3f MHz", if_, serial_.c_str(), loMin_ / 1e6, loMax_ / 1e6);
     }
 
@@ -173,7 +178,13 @@ public:
 
     // ---- frequency ----
     void setFrequency(const int dir, const size_t, const double f, const SoapySDR::Kwargs &) override {
-        setChecked(dir == SOAPY_SDR_RX ? ZC_P_RX_LO_HZ : ZC_P_TX_LO_HZ, static_cast<int64_t>(f));
+        // Clamp to the AD936x LO range. A host (e.g. SCEPTRE) often sets an out-of-range or 0 Hz
+        // default frequency on open; forwarding that raw gets EINVAL from the board and the
+        // connection fails. Clamping lets the device open; the host then tunes to a real frequency.
+        double cf = f;
+        if (cf < loMin_) cf = loMin_;
+        else if (cf > loMax_) cf = loMax_;
+        setChecked(dir == SOAPY_SDR_RX ? ZC_P_RX_LO_HZ : ZC_P_TX_LO_HZ, static_cast<int64_t>(cf));
     }
     double getFrequency(const int dir, const size_t) const override { return const_cast<NanoZC *>(this)->get(dir == SOAPY_SDR_RX ? ZC_P_RX_LO_HZ : ZC_P_TX_LO_HZ); }
     SoapySDR::RangeList getFrequencyRange(const int, const size_t) const override { return {SoapySDR::Range(loMin_, loMax_)}; }
@@ -208,7 +219,11 @@ public:
     void setGain(const int dir, const size_t ch, const double g) override { setGain(dir, ch, "PGA", g); }
     void setGain(const int dir, const size_t, const std::string &, const double g) override {
         if (dir == SOAPY_SDR_RX) {
-            if (agc_) setGainMode(SOAPY_SDR_RX, 0, false);
+            // Setting a manual gain requires MANUAL gain mode. The board boots in AGC, and a host
+            // (e.g. SCEPTRE) may set a gain on open before touching the mode; writing manual gain while
+            // in AGC returns EOPNOTSUPP. Always force manual first (standard Soapy setGain semantics);
+            // a host that wants AGC calls setGainMode(true) separately.
+            setGainMode(SOAPY_SDR_RX, 0, false);
             setChecked(ZC_P_RX_GAIN_MDB, static_cast<int64_t>(g * 1000));
         } else {
             double atten = std::min(0.0, std::max(-89.75, g - 89.75));
