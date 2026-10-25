@@ -1,0 +1,12 @@
+# build artifacts / compiled binaries
+*.o
+*.so
+*.dylib
+src/soapy/jitterprobe
+src/soapy/zctest
+src/soapy/zctx
+src/soapy/zcloop
+a.out
+
+# OS cruft
+.DS_Store
