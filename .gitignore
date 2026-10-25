@@ -10,3 +10,7 @@ a.out
 
 # OS cruft
 .DS_Store
+
+# prebuilt binaries live on the Releases page, not in git
+dist/**/*.so
+dist/**/*.dylib

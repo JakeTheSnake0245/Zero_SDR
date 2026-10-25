@@ -16,6 +16,20 @@ a SoapySDR module (`driver=nanozc`) uses for high-rate streaming.
 > [`firmware/stock/`](firmware/stock/) so you can always return to stock — see
 > [Flashing](#flashing) and [`docs/RESTORE.md`](docs/RESTORE.md).
 
+## Downloads
+
+Prebuilt firmware, host driver, and the SDR++ plugin are on the
+**[Releases page](../../releases)**. Install instructions: [`dist/README.md`](dist/README.md).
+
+| File | What it is | Needed for |
+|---|---|---|
+| `zero_sdr_slim.itb` | the firmware (flash to the board) | everything |
+| `libSoapyNanoZC.so` | host SoapySDR driver (`driver=nanozc`) | SCEPTRE **and** SDR++ |
+| `soapy_source.dylib` | SoapySDR source plugin for SDR++ v1.3.0 (macOS arm64) | SDR++ only |
+
+Prebuilt binaries are **macOS arm64**; other platforms build from source
+([`src/soapy/`](src/soapy/), [`docs/SDRPP_MACOS.md`](docs/SDRPP_MACOS.md)).
+
 ---
 
 ## What it actually does better
@@ -68,10 +82,12 @@ Select it like any Soapy device and set the sample rate up to 20 MS/s.
 
 ### With SDR++
 SDR++'s built-in **PlutoSDR** source uses libiio — that is the slow path and will be choppy at high
-rates. SDR++ can only use the zero-copy path through its **SoapySDR** source module, which the
-official macOS/Windows builds do **not** ship. To use Zero_SDR in SDR++ you need a `soapy_source`
-plugin built for your SDR++ version. (The standard Pluto source still works at low rates with no
-changes.)
+rates. The zero-copy path goes through SDR++'s **SoapySDR** source module, which the official
+builds do **not** ship. Install the `soapy_source.dylib` from the [Releases](../../releases) (macOS
+arm64 / SDR++ v1.3.0) plus `libSoapyNanoZC.so` — see [`dist/README.md`](dist/README.md) — or build
+the plugin for your SDR++ version with [`docs/SDRPP_MACOS.md`](docs/SDRPP_MACOS.md). Then: **Source**
+dropdown → **SoapySDR** → **PlutoSDR Nano zero-copy** → 20 MS/s. (The stock Pluto source still works
+at low rates unchanged.)
 
 ---
 
