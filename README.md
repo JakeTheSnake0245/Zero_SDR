@@ -27,8 +27,9 @@ Prebuilt firmware, host driver, and the SDR++ plugin are on the
 | `libSoapyNanoZC.so` | host SoapySDR driver (`driver=nanozc`) | SCEPTRE **and** SDR++ |
 | `soapy_source.dylib` | SoapySDR source plugin for SDR++ v1.3.0 (macOS arm64) | SDR++ only |
 
-Prebuilt binaries are **macOS arm64**; other platforms build from source
-([`src/soapy/`](src/soapy/), [`docs/SDRPP_MACOS.md`](docs/SDRPP_MACOS.md)).
+The host driver `libSoapyNanoZC.so` is prebuilt for **macOS arm64, Linux x86-64, and Linux ARM64**
+(Linux builds target the SoapySDR 0.8 ABI). The SDR++ plugin is macOS-arm64 / SDR++ v1.3.0 only;
+anything else builds from source ([`src/soapy/`](src/soapy/), [`docs/SDRPP_MACOS.md`](docs/SDRPP_MACOS.md)).
 
 ---
 

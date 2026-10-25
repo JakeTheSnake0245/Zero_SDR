@@ -4,17 +4,22 @@ Binaries are attached to the [GitHub Releases](../../releases) page, not committ
 This folder documents what they are and how to install them.
 
 ## Platform
-The prebuilt binaries are **macOS arm64 (Apple Silicon)**. They need Homebrew `soapysdr` (0.9 ABI)
-and `libusb`:
 
-```sh
-brew install soapysdr libusb
-```
+The host driver `libSoapyNanoZC.so` is prebuilt for three targets:
 
-For Linux/Windows/Intel, or a different SDR++ version, build from source — see
-[`../src/soapy/`](../src/soapy/) (host driver) and [`docs/SDRPP_MACOS.md`](../docs/SDRPP_MACOS.md)
-(SDR++ plugin). Downloaded binaries are quarantined by macOS; clear it after download:
-`xattr -dr com.apple.quarantine <file>`.
+| Folder | Target | Needs |
+|---|---|---|
+| `macos-arm64/` | macOS Apple Silicon | `brew install soapysdr libusb` (SoapySDR 0.9) |
+| `linux-x86_64/` | Linux x86-64 | `libsoapysdr0.8` + `libusb-1.0-0` (SoapySDR 0.8 ABI) |
+| `linux-aarch64/` | Linux ARM64 | `libsoapysdr0.8` + `libusb-1.0-0` (SoapySDR 0.8 ABI) |
+
+The Linux builds link the standard `libSoapySDR.so.0.8` / `libusb-1.0.so.0` SONAMEs, so any current
+Ubuntu/Debian with `libsoapysdr0.8` works (`sudo apt install libsoapysdr0.8 libusb-1.0-0`). If your
+distro ships a different SoapySDR ABI, build from source — one command, see
+[`../src/soapy/`](../src/soapy/). The SDR++ plugin (`soapy_source.dylib`) is **macOS arm64 /
+SDR++ v1.3.0** only; other versions/platforms build it per [`docs/SDRPP_MACOS.md`](../docs/SDRPP_MACOS.md).
+
+macOS downloads are quarantined; clear it: `xattr -dr com.apple.quarantine <file>`.
 
 ## `libSoapyNanoZC.so` — the host driver (needed by BOTH SDR++ and SCEPTRE)
 The SoapySDR module that talks to the board's zero-copy interface. Install into your SoapySDR
